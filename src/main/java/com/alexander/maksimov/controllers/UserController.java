@@ -19,20 +19,21 @@ public class UserController {
         this.userService = userService;
     }
 
+
     @GetMapping()
-    public String index(Model model) {
+    public String showAllUser(Model model) {
         model.addAttribute("users", userService.findAll());
         return "index";
     }
 
     @GetMapping("/{id}")
-    public String show(@PathVariable("id") int id, Model model) {
+    public String showOneUser(@PathVariable("id") int id, Model model) {
         model.addAttribute("user", userService.findOne(id));
         return "show";
     }
 
     @GetMapping("/new")
-    public String newPerson(@ModelAttribute("user") User user) {
+    public String showPageCreatingUser(@ModelAttribute("user") User user) {
         return "new";
     }
 
@@ -44,14 +45,14 @@ public class UserController {
     }
 
     @GetMapping("/{id}/update")
-    public String edit(Model model, @PathVariable("id") int id) {
+    public String showPageEditUser(Model model, @PathVariable("id") int id) {
         model.addAttribute("user", userService.findOne(id));
         return "update";
     }
 
     @PatchMapping("/{id}")
-    public String update(@ModelAttribute("user") User user, @PathVariable("id") int id) {
-        userService.update(id, user);
+    public String update(@ModelAttribute("user") User user) {
+        userService.update(user);
         return "redirect:/user";
     }
 

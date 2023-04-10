@@ -27,20 +27,17 @@ import java.util.Properties;
 
 @Configuration
 @EnableWebMvc
-@EnableTransactionManagement
 @ComponentScan("com.alexander.maksimov")
-@PropertySource("classpath:hibernate.properties")
 @EnableJpaRepositories("com.alexander.maksimov.repositories")
 
 public class SpringMVCConfig implements WebMvcConfigurer {
 
     private final ApplicationContext applicationContext;
-    private final Environment env;
+
 
     @Autowired
-    public SpringMVCConfig(ApplicationContext applicationContext, Environment env) {
+    public SpringMVCConfig(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
-        this.env = env;
     }
 
     @Bean
@@ -70,43 +67,4 @@ public class SpringMVCConfig implements WebMvcConfigurer {
         registry.viewResolver(resolver);
     }
 
-    @Bean
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-        final LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
-        em.setDataSource(dataSource());
-        em.setPackagesToScan("com.alexander.maksimov.models");
-
-        final HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-        em.setJpaVendorAdapter(vendorAdapter);
-        em.setJpaProperties(hibernateProperties());
-
-        return em;
-    }
-
-    @Bean
-    public PlatformTransactionManager transactionManager() {
-        JpaTransactionManager transactionManager = new JpaTransactionManager();
-        transactionManager.setEntityManagerFactory(entityManagerFactory().getObject());
-
-        return transactionManager;
-    }
-
-    @Bean
-    public DataSource dataSource() {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-
-        dataSource.setDriverClassName(env.getRequiredProperty("hibernate.driver_class"));
-        dataSource.setUrl(env.getRequiredProperty("hibernate.connection.url"));
-        dataSource.setUsername(env.getRequiredProperty("hibernate.connection.username"));
-        dataSource.setPassword(env.getRequiredProperty("hibernate.connection.password"));
-
-        return dataSource;
-    }
-    private Properties hibernateProperties() {
-        Properties properties = new Properties();
-        properties.put("hibernate.dialect", env.getRequiredProperty("hibernate.dialect"));
-        properties.put("hibernate.show_sql", env.getRequiredProperty("hibernate.show_sql"));
-
-        return properties;
-    }
 }
